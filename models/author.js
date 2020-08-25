@@ -1,3 +1,4 @@
+var moment = require("moment");
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
@@ -29,18 +30,22 @@ AuthorSchema
     return fullname;
   });
 
-// Virtual for author's lifespan
-AuthorSchema
-  .virtual("lifespan")
-  .get(() => {
-    return (this.date_of_death.getYear() - this.date_of_birth.getYear()).toString();
-  });
 
 // Virtual of author's URL
 AuthorSchema
   .virtual("url")
   .get(() => {
     return "/catalog/author/" + this._id;
+  });
+
+// Virtual for author's lifespan
+AuthorSchema
+  .virtual("lifespan")
+  .get(() => {
+    var lifespan = "";
+    lifespan = moment(this.date_of_birth).format("YYYY-MM-DD").toString();
+    lifespan += " - " + moment(this.date_of_death).format("YYYY-MM-DD").toString();
+    return lifespan;
   });
 
 module.exports = mongoose.model("Author", AuthorSchema);
